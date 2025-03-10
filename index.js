@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 let persons = [
     { 
@@ -23,7 +24,22 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+
 app.use(express.json())
+app.use(morgan('tiny'));
+ 
+
+
+morgan.token('info', (req) => {
+  if(req.method === 'POST') {
+    const name = req.body.name || 'N/A';
+    const number = req.body.number || 'N/A';
+    return `name: ${name}, number: ${number}`;
+  }
+  return '';
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :info'));
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
